@@ -3,6 +3,8 @@ from flask import render_template
 from flask import url_for
 from flask import flash
 from flask import request
+from flask import session
+from flask import redirect
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'qwertyuiop'
@@ -27,6 +29,20 @@ def contact():
         else:
             flash('Ошибка отправки', category='error') 
     return render_template('contact.html', title='Обратная связь', menu=menu)
+
+@app.route("/profile/<username>")
+def profile(username):
+    return f"Профиль пользователя: {username}"
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    if 'userLogged' in session:
+        return redirect(url_for('profile', username=session['userLogged']))
+    elif request.method == 'POST' and request.form['username'] == "selfedu" and request.form['psw'] == "123":
+        session['userLogged'] = request.form['username']
+        return redirect(url_for('profile', username=session['userLogged']))
+
+    return render_template('login.html', title="Авторизация", menu=menu)
 
 @app.errorhandler(404)
 def pageNotFound(error):
