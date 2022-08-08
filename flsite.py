@@ -5,6 +5,7 @@ from flask import flash
 from flask import request
 from flask import session
 from flask import redirect
+from flask import abort
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'qwertyuiop'
@@ -32,6 +33,8 @@ def contact():
 
 @app.route("/profile/<username>")
 def profile(username):
+    if 'userLogged' not in session or session['userLogged'] != username:
+        abort(401)
     return f"Профиль пользователя: {username}"
 
 @app.route("/login", methods=["POST", "GET"])
